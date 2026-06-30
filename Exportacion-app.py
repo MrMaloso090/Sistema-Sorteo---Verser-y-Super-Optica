@@ -88,7 +88,7 @@ with mysql.connector.connect(**connection) as conn:
     # SE INGRESAN LA LISTAS COMPLETAS CON .EXECUTEMANY
     cur.executemany('''INSERT IGNORE INTO super_optica(numero_de_orden, fecha, id_cliente, id_tipo_de_documento, id_documento, 
                     id_celular, id_email, id_direccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', 
-                    (datos))
+                    datos)
     print('previo al commit')
     conn.commit()
     print('Proceso Terminado')

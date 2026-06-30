@@ -50,17 +50,20 @@ def seleccion_de_ganador(tabla, semanal_o_mensual, columna):
     # SE AJUSTA LA FECHA INICIAL Y LA FECHA FINAL SEGUN EL CASO. (SEMANAL O MENSUAL)
     if semanal_o_mensual == 'semanal':
         # SE ENCUENTRA EL PRIMER DIA DE LA SEMANA ACTUAL (SABADO) PARA LUEGO OPTENER LA SEMANA PASADA
+        # SE TOMA COMO REFERENTE EL DIA PRESENTE.
         hoy = date.today()
         print('DIA ACTUAL: ', hoy)
-        cantidad_de_dias_transcurridos_desde_el_sabado = (hoy.weekday() - 5) % 7 # FORMULA RE LOCA PARA ACOMODAR LOS DIAS, Y HACER QUE SABADO SEA 0 Y EL VIERNES 6.
-        inicio_semana_actual_sabado = hoy - timedelta(days=cantidad_de_dias_transcurridos_desde_el_sabado)
-        # PRIMER Y ULTIMO DIA DE LA SEMANA PASADA. SABADO -> VIERNES
-        inicio_semana_pasada_sabado = inicio_semana_actual_sabado - timedelta(days=7)
-        final_semana_pasada_viernes = inicio_semana_pasada_sabado + timedelta(days=6)
-        print('FEHCAS SEMANA PASADA: ', inicio_semana_pasada_sabado, final_semana_pasada_viernes)
+        # SE ENCUENTRA EL PRIMER DIA DE LA SEMANA ACTUAL (LUNES)
+        inicio_semana_actual = hoy - timedelta(days=(hoy.weekday()))
+        # SE ENCUENTRA EL LUNES DE LA SEMANA PASADA.
+        lunes_pasado = inicio_semana_actual - timedelta(days=7)
+        # SE ENCUENTRA EL DOMINGO PASADO
+        domingo_pasado = lunes_pasado + timedelta(days=6)
         # SE AJUSTA, LOS NOMBRES POR UNA OPCION GENERICA.
-        fecha_inicial = inicio_semana_pasada_sabado
-        fecha_final = final_semana_pasada_viernes
+        fecha_inicial = lunes_pasado
+        fecha_final = domingo_pasado
+        print('SEMANAL')
+        print("FECHAS SEMANA PASADO:", lunes_pasado, domingo_pasado)
 
     if semanal_o_mensual == 'mensual':
         # SE TOMA EL EL HOY, PARA ASI BUSCAR EL PRIMER DIA DEL MES ACTUAL. PARA POSTERIORMENTE CONSEGUIR LAS FECHAS DEL MES PASADO.
@@ -69,10 +72,10 @@ def seleccion_de_ganador(tabla, semanal_o_mensual, columna):
         # SE CONSIGUEN LAS FECHAS DEL PRIMER Y EL ULTIMO DIA DEL MES PASADO AL PRESENTE.
         ultimo_dia_mes_pasado = primer_dia_mes_actual - timedelta(days=1)
         primer_dia_mes_pasado = ultimo_dia_mes_pasado.replace(day=1)
-        print("FECHAS MES PASADO:", primer_dia_mes_pasado, ultimo_dia_mes_pasado)
         # SE AJUSTA, LOS NOMBRES POR UNA OPCION GENERICA.
         fecha_inicial = primer_dia_mes_pasado
         fecha_final = ultimo_dia_mes_pasado
+        print("FECHAS MES PASADO:", primer_dia_mes_pasado, ultimo_dia_mes_pasado)
 
     # SE BUSCA UN PARTISIPANTE GANADOR A PARTIR DE SUS LISTAS DE NUMEROS.
     with mysql.connector.connect(**conection) as conn:
@@ -98,9 +101,9 @@ def seleccion_de_ganador(tabla, semanal_o_mensual, columna):
 
         # LOS DATOS DEL GANADOR SON GUARDADOS EN SU RESPECTIVA TABLA.
         if semanal_o_mensual == 'semanal':
-            tabla_ganador = 'ganador_semanal_super_optica'
-        if semanal_o_mensual == 'mensual':
-            tabla_ganador = 'ganador_mensual_super_optica'
+            tabla_ganador = f'ganador_semanal_{tabla}'
+        elif semanal_o_mensual == 'mensual':
+            tabla_ganador = f'ganador_mensual_{tabla}'
 
         cur.execute(f'SELECT * FROM {tabla} WHERE numero_de_orden = %s', (orden_ganadora,))
         datos_ganador = cur.fetchone()
@@ -113,12 +116,45 @@ def seleccion_de_ganador(tabla, semanal_o_mensual, columna):
         print('Finalizado')
 
 
-
-
-# SE EJECUTA LA DEFINICION Y SE USA UN TRY EXCEPT CON ESTEROIDES.
+#=====================================
+# SE IMPORTA UN TRY CON ESTEEROIDES.
 import traceback
-try:
-    seleccion_de_ganador('super_optica', 'semanal', 'codigos_semanales')
-except Exception as e:
-    print(e)
-    traceback.print_exc()
+#=====================================
+
+
+# FUNCION PARA SUPER OPTICA - *SEMANAL*
+def ganador_super_optica_semanal():
+    try:
+        seleccion_de_ganador('super_optica', 'semanal', 'codigos_semanales')
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+
+# FUNCION PARA SUPER OPTICA - *MENSUAL*
+def ganador_super_optica_mensual():
+    try:
+        seleccion_de_ganador('super_optica', 'mensual', 'codigos_mensuales')
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+
+# FUNCION PARA VERSER - *SEMANAL*
+def ganador_verser_semanal():
+    try:
+        seleccion_de_ganador('verser', 'semanal', 'codigos_semanales')
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+
+# FUNCION PARA VERSER - *MENSUAL*
+def ganador_verser_mensual():
+    try:
+        seleccion_de_ganador('verser', 'mensual', 'codigos_mensuales')
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+
+
+
+
+ganador_super_optica_semanal()

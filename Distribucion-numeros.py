@@ -23,31 +23,43 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
     # DESORDENAMOS ALEATORIAMENTE LOS 10.000 CODIGOS QUE HAY EN LA LISTA, MIENTRAS AUN SE MANTIENE COMO LISTA.
     random.shuffle(lista_de_codigos_a_repartir)
 
+    # ===============================================================================
+    # ===============================================================================
+
     # SE AJUSTA LA FECHA INICIAL Y LA FECHA FINAL SEGUN EL CASO. (SEMANAL O MENSUAL)
     if semanal_o_mensual == 'semanal':
-        # SE ENCUENTRA EL PRIMER DIA DE LA SEMANA ACTUAL (SABADO) PARA LUEGO OPTENER LA SEMANA PASADA
+        # SE TOMA COMO REFERENTE EL DIA PRESENTE.
         hoy = date.today()
         print('DIA ACTUAL: ', hoy)
-        cantidad_de_dias_transcurridos_desde_el_sabado = (hoy.weekday() - 5) % 7 # FORMULA RE LOCA PARA ACOMODAR LOS DIAS, Y HACER QUE SABADO SEA 0 Y EL VIERNES 6.
-        inicio_semana_actual_sabado = hoy - timedelta(days=cantidad_de_dias_transcurridos_desde_el_sabado)
-        # PRIMER Y ULTIMO DIA DE LA SEMANA PASADA. SABADO -> VIERNES
-        inicio_semana_pasada_sabado = inicio_semana_actual_sabado - timedelta(days=7)
-        final_semana_pasada_viernes = inicio_semana_pasada_sabado + timedelta(days=6)
-        print('FEHCAS SEMANA PASADA: ', inicio_semana_pasada_sabado, final_semana_pasada_viernes)
+        # SE ENCUENTRA EL PRIMER DIA DE LA SEMANA ACTUAL (LUNES)
+        inicio_semana_actual = hoy - timedelta(days=(hoy.weekday()))
+        # SE ENCUENTRA EL LUNES DE LA SEMANA PASADA.
+        lunes_pasado = inicio_semana_actual - timedelta(days=7)
+        # SE ENCUENTRA EL DOMINGO PASADO
+        domingo_pasado = lunes_pasado + timedelta(days=6)
         # SE AJUSTA, LOS NOMBRES POR UNA OPCION GENERICA.
-        fecha_inicial = inicio_semana_pasada_sabado
-        fecha_final = final_semana_pasada_viernes
+        fecha_inicial = lunes_pasado
+        fecha_final = domingo_pasado
+        print('SEMANAL')
+
     if semanal_o_mensual == 'mensual':
         # SE TOMA EL EL HOY, PARA ASI BUSCAR EL PRIMER DIA DEL MES ACTUAL. PARA POSTERIORMENTE CONSEGUIR LAS FECHAS DEL MES PASADO.
         hoy = date.today()
         primer_dia_mes_actual = hoy.replace(day=1)
-        # SE CONSIGUEN LAS FECHAS DEL PRIMER Y EL ULTIMO DIA DEL MES PASADO AL PRESENTE.
+        # SE CONSIGUEN LAS FECHAS DEL PRIMER Y EL ULTIMO DIA DEL MES PASADO.
         ultimo_dia_mes_pasado = primer_dia_mes_actual - timedelta(days=1)
         primer_dia_mes_pasado = ultimo_dia_mes_pasado.replace(day=1)
-        print("FECHAS MES PASADO:", primer_dia_mes_pasado, ultimo_dia_mes_pasado)
         # SE AJUSTA, LOS NOMBRES POR UNA OPCION GENERICA.
         fecha_inicial = primer_dia_mes_pasado
         fecha_final = ultimo_dia_mes_pasado
+        print('MENSUAL')
+
+
+    print(f'PRIMER DIA SEMANA PASADA: {fecha_inicial}')
+    print(f'ULTIMO DIA SEMANA PASADA: {fecha_final}')
+
+    # ===============================================================================
+    # ===============================================================================
         
     # CONECCION CON LA BASE DE DATOS.
     with mysql.connector.connect(**conection) as conn:
@@ -55,8 +67,10 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
         cur.execute(f'SELECT numero_de_orden FROM {nombre_de_la_tabla} WHERE fecha BETWEEN %s AND %s', 
                     (fecha_inicial, fecha_final))
         jugadores = cur.fetchall()
+        if not jugadores:
+            print(f'ERROR EN LA DB: NO HAY COMPRAS DE LA SEMANA PASADA')
         print('JUGADORES: ', jugadores)
-
+        
     # SE RESUELVE EL MAXIMO COMUN MULTIPLO MENOR QUE 10.000, DE LA CANTIDAD DE PARTISIPANTES.
     cantidad_de_jugadores = len(jugadores)
     print('CANTIDAD DE JUGADORES: ', cantidad_de_jugadores)
@@ -79,9 +93,8 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
 
     for codigo in lista_de_codigos_a_repartir:
         conteo_maximo_comun_multiplo += 1
-        conteo_de_agrupaciones +=1
 
-        if conteo_maximo_comun_multiplo >= maximo_comun_multiplo:
+        if conteo_maximo_comun_multiplo > maximo_comun_multiplo:
             lista_codigos_sobrantes.append(codigo)
             continue
 
@@ -95,7 +108,7 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
             agrupacion_de_codigos_por_persona = []
             conteo_de_agrupaciones = 0
 
-    #print('AFRUPACIONES POR PERSONA: ', lista_de_grupos)
+    #print('AGRUPACIONES POR PERSONA: ', lista_de_grupos)
     #print('SOBRANTES: ', lista_codigos_sobrantes)
 
     # SE ENTREGA UN GRUPO DE NUMEROS A CADA JUGADOR.
@@ -103,7 +116,7 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
         cur = conn.cursor()
         for jugador, grupo_por_persona in zip(jugadores, lista_de_grupos):
             cur.execute(f'UPDATE {nombre_de_la_tabla} SET {columna} = %s WHERE numero_de_orden = %s', (grupo_por_persona, jugador[0]))
-            #print('JUGADOR Y SU GRUPO: ', jugador[0], ': ', grupo_por_persona)
+            print('JUGADOR Y SU GRUPO: ', jugador[0], ': ', grupo_por_persona)
         conn.commit()
 
     # SE ASIGNA UN JUGADOR (QUIEN SERA EL MAYOR COMPRADOR DE LA SEMANA) A QUIEN A;ADIRLE A SU GUPO DE CODIGOS LOS CODIGOS SOBRANTES.
@@ -115,26 +128,60 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
 
         cur.execute(f"SELECT numero_de_orden FROM {nombre_de_la_tabla} WHERE id_cliente = %s AND fecha >= %s AND fecha <= %s ORDER BY RAND() LIMIT 1 ", 
                     (mayor_comprador, fecha_inicial, fecha_final))
-        numero_de_orden_ganador = cur.fetchone()[0]
-        print('NUMERO DE ORDEN GANADOR: ', numero_de_orden_ganador)
+        numero_de_orden_del_mayor_comprador = cur.fetchone()[0]
+        print('NUMERO DE ORDEN DEL MAYOR COMPRADOR: ', numero_de_orden_del_mayor_comprador)
 
         # SE A;ADEN LOS NUMEROS SOBRANTES A EL NUMERO DE ORDEN ALEATORIO QUE LE PERTENESCA AL MAYOR COMPRADOR.
-        cur.execute(f'SELECT {columna} FROM {nombre_de_la_tabla} WHERE numero_de_orden = %s', (numero_de_orden_ganador,))
+        cur.execute(f'SELECT {columna} FROM {nombre_de_la_tabla} WHERE numero_de_orden = %s', (numero_de_orden_del_mayor_comprador,))
         grupo_ya_asignado = cur.fetchone()[0]
-        print('GRUPO PREVIO: ', grupo_ya_asignado)
+        print('GRUPO PREVIO DE UNA ORDEN DEL MAYOR COMPRADDOR: ', grupo_ya_asignado)
 
         grupo_sobrante = ','.join(lista_codigos_sobrantes)
         grupo_nuevo_de_codigos = f'{grupo_ya_asignado},{grupo_sobrante}'
-        print('NUEVO GRUPO: ', grupo_nuevo_de_codigos)
+        print('GRUPO PREVIO MAS LOS CODIGOS SOBRANTES, QUE SE LE ENTREGAN AL MAYOR COMPRADOR DE LA SEMANA: ', grupo_nuevo_de_codigos)
 
-        cur.execute(f'UPDATE {nombre_de_la_tabla} SET {columna} = %s WHERE numero_de_orden = %s', (grupo_nuevo_de_codigos, numero_de_orden_ganador))
+        cur.execute(f'UPDATE {nombre_de_la_tabla} SET {columna} = %s WHERE numero_de_orden = %s', (grupo_nuevo_de_codigos, numero_de_orden_del_mayor_comprador))
         conn.commit()
 
 
-# SE EJECUTA LA DEFINICION Y SE USA UN TRY EXCEPT CON ESTEROIDES.
+#=====================================
+# SE IMPORTA UN TRY CON ESTEEROIDES.
 import traceback
-try:
-    distribucion_de_numero('super_optica', 'semanal', 'codigos_semanales')
-except Exception as e:
-    print(e)
-    traceback.print_exc()
+#=====================================
+
+
+# FUNCION PARA SUPER OPTICA - *SEMANAL*
+def distribucion_super_optica_semanal():
+    try:
+        distribucion_de_numero('super_optica', 'semanal', 'codigos_semanales')
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+
+# FUNCION PARA SUPER OPTICA - *MENSUAL*
+def distribucion_super_optica_mensual():
+    try:
+        distribucion_de_numero('super_optica', 'mensual', 'codigos_mensuales')
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+
+# FUNCION PARA VERSER - *SEMANAL*
+def distribucion_verser_semanal():
+    try:
+        distribucion_de_numero('verser', 'semanal', 'codigos_semanales')
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+
+# FUNCION PARA VERSER - *MENSUAL*
+def distribucion_verser_mensual():
+    try:
+        distribucion_de_numero('verser', 'mensual', 'codigos_mensuales')
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+
+
+
+distribucion_super_optica_semanal()
