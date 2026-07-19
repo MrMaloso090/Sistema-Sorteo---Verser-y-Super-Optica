@@ -14,10 +14,17 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
         'database': os.environ.get('DB_NAME2'),
         'port': 3306}
 
-    # LISTA CON LAS 10.000 OPCIONES DISTINTAS: (0000, 0001, 0002... 9998, 9999) #
+    # LISTA CON LAS 10.000 OPCIONES DISTINTAS: (0000, 0001, 0002... 9998, 9999) # O SI ES SUPER OPTICA SE CREAN CODIGOS DE 3 DIGITOS (000, 001, 002...)
+    if nombre_de_la_tabla == 'super_optica':
+        cantidad_de_digitos = 3
+        cantidad_codigos = 1000
+    elif nombre_de_la_tabla == 'verser':
+        cantidad_de_digitos = 4
+        cantidad_codigos = 10000
+
     lista_de_codigos_a_repartir = []
-    for numero in range(10000):
-        codigo = str(numero).zfill(4)
+    for numero in range(cantidad_codigos):
+        codigo = str(numero).zfill(cantidad_de_digitos)
         lista_de_codigos_a_repartir.append(codigo)
 
     # DESORDENAMOS ALEATORIAMENTE LOS 10.000 CODIGOS QUE HAY EN LA LISTA, MIENTRAS AUN SE MANTIENE COMO LISTA.
@@ -74,13 +81,13 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
     # SE RESUELVE EL MAXIMO COMUN MULTIPLO MENOR QUE 10.000, DE LA CANTIDAD DE PARTISIPANTES.
     cantidad_de_jugadores = len(jugadores)
     print('CANTIDAD DE JUGADORES: ', cantidad_de_jugadores)
-    maximo_comun_multiplo = (10000 // cantidad_de_jugadores) * cantidad_de_jugadores
+    maximo_comun_multiplo = (cantidad_codigos // cantidad_de_jugadores) * cantidad_de_jugadores
 
     # SE DIVIDE EL MAXIMO COMUN MULTIPLO ENTRE LA CANTIDAD DE PARTISIPANTES, PARA ASIGNAR LA CANTIDAD DE CODIGOS PARA CADA PARTISIPANTE.
     cantidad_de_codigos_por_jugador = (maximo_comun_multiplo // cantidad_de_jugadores)
 
     # AHORA SE CALCULAN LOS NUMEROS RESTANTES, PARA ALCANZAR Y REDONDEAR EL 10.000
-    sobrante = 10000 - maximo_comun_multiplo
+    sobrante = cantidad_codigos - maximo_comun_multiplo
 
     # SE CREA UNA LISTA CON LA CANTIDAD PRECISA DE CODIGOS QUE SE LE DEBEN ASIGNAS A CADA JUGADOR.
     lista_de_grupos = [] # IMPORTANTE
@@ -119,36 +126,26 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
             print('JUGADOR Y SU GRUPO: ', jugador[0], ': ', grupo_por_persona)
         conn.commit()
 
-    # SE ASIGNA UN JUGADOR (QUIEN SERA EL MAYOR COMPRADOR DE LA SEMANA) A QUIEN A;ADIRLE A SU GUPO DE CODIGOS LOS CODIGOS SOBRANTES.
-    with mysql.connector.connect(**conection) as conn:
-        cur = conn.cursor()
-        cur.execute(f"SELECT id_cliente, COUNT(*) AS repeticiones FROM {nombre_de_la_tabla} WHERE fecha >= %s AND fecha <= %s GROUP BY id_cliente ORDER BY repeticiones DESC LIMIT 1", 
-                    (fecha_inicial, fecha_final))
-        mayor_comprador = cur.fetchone()[0]
+    # SE REPARTEN LOS NUMEROS SOBRANTES, ASIGNANOLE UNO A DISTINTOS PARTISIPANTEZ DE FORMA AZAROSA.
+        cantidad_de_numeros_sobrantes = len(lista_codigos_sobrantes)
+        if cantidad_de_numeros_sobrantes != 0:
+            cur.execute(f'SELECT numero_de_orden FROM {nombre_de_la_tabla} WHERE fecha >= %s AND fecha <= %s  ORDER BY RAND() LIMIT {cantidad_de_numeros_sobrantes}', (fecha_inicial, fecha_final))
+            lista_de_ordenes_aleatoria = cur.fetchall()
+            
+            for sobrante, orden in zip(lista_codigos_sobrantes, lista_de_ordenes_aleatoria):
+                cur.execute(f'SELECT {columna} FROM {nombre_de_la_tabla} WHERE numero_de_orden = %s', (orden[0],))
+                grupo_asignado_previamente = cur.fetchone()[0]
+                grupo_nuevo = f'{grupo_asignado_previamente},{sobrante}'
+                cur.execute(f'UPDATE {nombre_de_la_tabla} SET {columna} = %s WHERE numero_de_orden = %s', (grupo_nuevo, orden[0]))
+            conn.commit()
 
-        cur.execute(f"SELECT numero_de_orden FROM {nombre_de_la_tabla} WHERE id_cliente = %s AND fecha >= %s AND fecha <= %s ORDER BY RAND() LIMIT 1 ", 
-                    (mayor_comprador, fecha_inicial, fecha_final))
-        numero_de_orden_del_mayor_comprador = cur.fetchone()[0]
-        print('NUMERO DE ORDEN DEL MAYOR COMPRADOR: ', numero_de_orden_del_mayor_comprador)
 
-        # SE A;ADEN LOS NUMEROS SOBRANTES A EL NUMERO DE ORDEN ALEATORIO QUE LE PERTENESCA AL MAYOR COMPRADOR.
-        cur.execute(f'SELECT {columna} FROM {nombre_de_la_tabla} WHERE numero_de_orden = %s', (numero_de_orden_del_mayor_comprador,))
-        grupo_ya_asignado = cur.fetchone()[0]
-        print('GRUPO PREVIO DE UNA ORDEN DEL MAYOR COMPRADDOR: ', grupo_ya_asignado)
-
-        grupo_sobrante = ','.join(lista_codigos_sobrantes)
-        grupo_nuevo_de_codigos = f'{grupo_ya_asignado},{grupo_sobrante}'
-        print('GRUPO PREVIO MAS LOS CODIGOS SOBRANTES, QUE SE LE ENTREGAN AL MAYOR COMPRADOR DE LA SEMANA: ', grupo_nuevo_de_codigos)
-
-        cur.execute(f'UPDATE {nombre_de_la_tabla} SET {columna} = %s WHERE numero_de_orden = %s', (grupo_nuevo_de_codigos, numero_de_orden_del_mayor_comprador))
-        conn.commit()
 
 
 #=====================================
 # SE IMPORTA UN TRY CON ESTEEROIDES.
 import traceback
 #=====================================
-
 
 # FUNCION PARA SUPER OPTICA - *SEMANAL*
 def distribucion_super_optica_semanal():

@@ -104,9 +104,27 @@ def comunicacion_con_jugadores(tabla, semanal_o_mensual, columna):
                 print(f'\nEMAIL: {email}\nCLIENTE: {cliente}\nINFORMACION: {informacion}\n')
 
                 ## SE ENVIA UN CORREO POR CADA EMAIL, CLIENTE.
-                mensaje = MIMEText(f'Hola, {cliente}.\nHoy es lunes de recordarte que con cada compra en Verser o en Super Optica te da la oportunidad de ganar con nosotros.\nRecuerda que cada compra es una nueva oportunidad para ganar. Aqui estan tus compras y tus numeros a jugar:\n{informacion}')
+                mensaje = MIMEText(f''' 
+Hola {cliente}
 
-                mensaje["Subject"] = f'Bienvenido al juego, {cliente}'
+Gracias por confiar en Super Óptica.
+
+Ahora que decidiste ver el mundo de la mejor manera, queremos darte una razón más para sonreír. Desde hoy haces parte de Consultas para decidir y ganar.
+
+Tus números son: 
+{informacion}
+
+Guárdalos muy bien. Con estos números participarás el viernes por la Lotería de Medellín. Si resultas ganador, te devolvemos el 100% del valor de tu compra y además recibirás $1.000.000 adicionales.
+
+Sí, podrías estrenar tus gafas, recuperar todo lo que pagaste y recibir un millón de pesos más. Porque en Super Óptica creemos que las mejores decisiones también pueden traer grandes oportunidades.
+
+Recuerda cada viernes tendremos un(a) ganador(a) y el próximo puedes ser tu.
+
+Super Óptica
+Para que veas el mundo de la mejor manera.
+''')
+
+                mensaje["Subject"] = f'Gracias por confiar en Super Óptica.'
                 mensaje["From"] = EMAIL
                 mensaje["To"] = email # email del cliente !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -122,6 +140,6 @@ def comunicacion_con_jugadores(tabla, semanal_o_mensual, columna):
 
 
 
-#comunicacion_con_jugadores('super_optica', 'semanal', 'codigos_semanales')
+comunicacion_con_jugadores('super_optica', 'semanal', 'codigos_semanales')
 
-comunicacion_con_jugadores('super_optica', 'mensual', 'codigos_mensuales')
+#comunicacion_con_jugadores('super_optica', 'mensual', 'codigos_mensuales')

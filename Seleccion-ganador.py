@@ -28,6 +28,8 @@ def seleccion_de_ganador(tabla, semanal_o_mensual, columna):
     # FECHA DEL SORTEO Y NUMERO GANADOR !!
     fecha_sorteo = lista_de_datos[2].strip()
     numero_ganador = lista_de_datos[4].strip()
+    if tabla == 'super_optica':
+        numero_ganador = numero_ganador[1:]
 
     # TRADUCE LA HORA A COMO LA NECESITA MYSQL.
     meses = {
