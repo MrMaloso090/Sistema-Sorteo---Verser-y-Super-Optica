@@ -100,30 +100,37 @@ def comunicacion_con_jugadores(tabla, semanal_o_mensual, columna):
                 cliente = resultado[0] if resultado else None
 
 
+
                 ## SE IMPRIMEN LOS DATOS OBTENIDOS.
                 print(f'\nEMAIL: {email}\nCLIENTE: {cliente}\nINFORMACION: {informacion}\n')
 
                 ## SE ENVIA UN CORREO POR CADA EMAIL, CLIENTE.
-                mensaje = MIMEText(f''' 
+                mensaje = MIMEText(f'''
 Hola {cliente}
 
 Gracias por confiar en Super Óptica.
 
-Ahora que decidiste ver el mundo de la mejor manera, queremos darte una razón más para sonreír. Desde hoy haces parte de Consultas para decidir y ganar.
+Ahora que decidiste ver el mundo de la mejor manera, queremos darte una razón más para sonreír. Desde hoy haces parte de "Consultas para decidir y ganar".
 
-Tus números son: 
+Tus números son:
 {informacion}
 
-Guárdalos muy bien. Con estos números participarás el viernes por la Lotería de Medellín. Si resultas ganador, te devolvemos el 100% del valor de tu compra y además recibirás $1.000.000 adicionales.
+Guárdalos muy bien. Con estos números participarás en el sorteo de esta semana, correspondiente a las compras realizadas entre el {fecha_inicial} y el {fecha_final}.
+
+Tu compra fue registrada el:
+{fecha}
+
+El sorteo se realizará el viernes por la Lotería de Medellín. Si resultas ganador(a), te devolveremos el 100% del valor de tu compra y además recibirás $1.000.000 adicionales.
 
 Sí, podrías estrenar tus gafas, recuperar todo lo que pagaste y recibir un millón de pesos más. Porque en Super Óptica creemos que las mejores decisiones también pueden traer grandes oportunidades.
 
-Recuerda cada viernes tendremos un(a) ganador(a) y el próximo puedes ser tu.
+Recuerda que cada viernes tendremos un(a) ganador(a), y el próximo podrías ser tú.
+
+¡Mucha suerte!
 
 Super Óptica
 Para que veas el mundo de la mejor manera.
 ''')
-
                 mensaje["Subject"] = f'Gracias por confiar en Super Óptica.'
                 mensaje["From"] = EMAIL
                 mensaje["To"] = email # email del cliente !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
