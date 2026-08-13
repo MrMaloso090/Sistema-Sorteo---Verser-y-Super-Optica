@@ -1,12 +1,12 @@
+from flask import Flask
+app = Flask(__name__)
+
 def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
     import mysql.connector
     from dotenv import load_dotenv
     import os
     import random
     from datetime import date, timedelta
-    from flask import Flask
-
-    app = Flask(__name__)
 
     # SE TOMAN LOS DATOS DEL .ENV
     load_dotenv()
