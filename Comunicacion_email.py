@@ -146,7 +146,10 @@ Para que veas el mundo de la mejor manera.
 
 
 
+def comunicacion_semanal_super_optica():
+    comunicacion_con_jugadores('super_optica', 'semanal', 'codigos_semanales')
 
-comunicacion_con_jugadores('super_optica', 'semanal', 'codigos_semanales')
+
+
 
 #comunicacion_con_jugadores('super_optica', 'mensual', 'codigos_mensuales')
