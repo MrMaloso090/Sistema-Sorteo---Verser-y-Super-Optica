@@ -4,7 +4,7 @@ from Comunicacion_email import comunicacion_semanal_super_optica
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/distribuir_y_comunicar_los_numeros_de_el_sorteo", methods=["GET", "POST"])
 def ejecutar():
 
     distribucion_super_optica_semanal()
