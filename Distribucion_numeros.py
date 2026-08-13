@@ -146,41 +146,24 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
 
 
 #=====================================
-# SE IMPORTA UN TRY CON ESTEEROIDES.
-import traceback
-#=====================================
 
 # FUNCION PARA SUPER OPTICA - *SEMANAL*
 def distribucion_super_optica_semanal():
-    try:
-        distribucion_de_numero('super_optica', 'semanal', 'codigos_semanales')
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+    distribucion_de_numero('super_optica', 'semanal', 'codigos_semanales')
 
 # FUNCION PARA SUPER OPTICA - *MENSUAL*
 def distribucion_super_optica_mensual():
-    try:
-        distribucion_de_numero('super_optica', 'mensual', 'codigos_mensuales')
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+    distribucion_de_numero('super_optica', 'mensual', 'codigos_mensuales')
+
 
 # FUNCION PARA VERSER - *SEMANAL*
 def distribucion_verser_semanal():
-    try:
-        distribucion_de_numero('verser', 'semanal', 'codigos_semanales')
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+    distribucion_de_numero('verser', 'semanal', 'codigos_semanales')
+
 
 # FUNCION PARA VERSER - *MENSUAL*
 def distribucion_verser_mensual():
-    try:
-        distribucion_de_numero('verser', 'mensual', 'codigos_mensuales')
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+    distribucion_de_numero('verser', 'mensual', 'codigos_mensuales')
 
 #=====================================
 
