@@ -1,6 +1,3 @@
-from flask import Flask
-app = Flask(__name__)
-
 def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
     import mysql.connector
     from dotenv import load_dotenv
@@ -152,8 +149,8 @@ def distribucion_super_optica_semanal():
     distribucion_de_numero('super_optica', 'semanal', 'codigos_semanales')
 
 # FUNCION PARA SUPER OPTICA - *MENSUAL*
-def distribucion_super_optica_mensual():
-    distribucion_de_numero('super_optica', 'mensual', 'codigos_mensuales')
+#def distribucion_super_optica_mensual():
+    #distribucion_de_numero('super_optica', 'mensual', 'codigos_mensuales')
 
 
 # FUNCION PARA VERSER - *SEMANAL*
@@ -162,12 +159,5 @@ def distribucion_verser_semanal():
 
 
 # FUNCION PARA VERSER - *MENSUAL*
-def distribucion_verser_mensual():
-    distribucion_de_numero('verser', 'mensual', 'codigos_mensuales')
-
-#=====================================
-
-@app.route("/", methods=["GET", "POST"])
-def ejecutar():
-    distribucion_super_optica_semanal()
-    return "Distribución ejecutada correctamente", 200
+#def distribucion_verser_mensual():
+    #distribucion_de_numero('verser', 'mensual', 'codigos_mensuales')

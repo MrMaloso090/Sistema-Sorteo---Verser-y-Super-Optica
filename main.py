@@ -1,7 +1,7 @@
 from flask import Flask
-from Distribucion_numeros import distribucion_super_optica_semanal
-from Comunicacion_email import comunicacion_semanal_super_optica
-from Seleccion_ganador import ganador_super_optica_semanal
+from Distribucion_numeros import distribucion_super_optica_semanal, distribucion_verser_semanal
+from Comunicacion_email import comunicacion_super_optica_semanal, comunicacion_verser_semanal
+from Seleccion_ganador import ganador_super_optica_semanal, ganador_verser_semanal
 
 app = Flask(__name__)
 
@@ -9,9 +9,13 @@ app = Flask(__name__)
 @app.route("/distribuir_y_comunicar_los_numeros_de_el_sorteo", methods=["GET", "POST"])
 def distribucion_de_numeros_y_correos():
 
+    # SUPER OPTICA:
     distribucion_super_optica_semanal()
+    comunicacion_super_optica_semanal()
 
-    comunicacion_semanal_super_optica()
+    # VERSER:
+    #distribucion_verser_semanal()
+    #comunicacion_verser_semanal()
     
     return "Distribución ejecutada correctamente", 200
 
@@ -19,6 +23,10 @@ def distribucion_de_numeros_y_correos():
 @app.route("/selector_del_ganador_semanal_super_optica", methods=["GET", "POST"])
 def selecciona_al_ganador():
 
+    # SUPER OPTICA:
     ganador_super_optica_semanal()
-    
+
+    # VERSER:
+    #ganador_verser_semanal()
+
     return "Distribución ejecutada correctamente", 200

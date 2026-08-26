@@ -133,12 +133,12 @@ def ganador_super_optica_semanal():
         traceback.print_exc()
 
 # FUNCION PARA SUPER OPTICA - *MENSUAL*
-def ganador_super_optica_mensual():
-    try:
-        seleccion_de_ganador('super_optica', 'mensual', 'codigos_mensuales')
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+#def ganador_super_optica_mensual():
+#    try:
+#        seleccion_de_ganador('super_optica', 'mensual', 'codigos_mensuales')
+#    except Exception as e:
+#        print(e)
+#        traceback.print_exc()
 
 # FUNCION PARA VERSER - *SEMANAL*
 def ganador_verser_semanal():
@@ -149,14 +149,14 @@ def ganador_verser_semanal():
         traceback.print_exc()
 
 # FUNCION PARA VERSER - *MENSUAL*
-def ganador_verser_mensual():
-    try:
-        seleccion_de_ganador('verser', 'mensual', 'codigos_mensuales')
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+#def ganador_verser_mensual():
+#    try:
+#        seleccion_de_ganador('verser', 'mensual', 'codigos_mensuales')
+#    except Exception as e:
+#        print(e)
+#        traceback.print_exc()
 
 
 
 
-ganador_super_optica_semanal()
+#ganador_super_optica_semanal()

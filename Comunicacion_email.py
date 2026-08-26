@@ -86,7 +86,7 @@ def comunicacion_con_jugadores(tabla, semanal_o_mensual, columna):
                 cur.execute(f' SELECT numero_de_orden, fecha, {columna} FROM {tabla} WHERE fecha >= %s AND fecha <= %s AND id_email = %s', (fecha_inicial, fecha_final, id_email))
                 respuesta = cur.fetchall()
                 for orden, fecha, numeros in respuesta:
-                    cada_orden_y_sus_numeros.append(f'*{orden}, {fecha}*: {numeros}')
+                    cada_orden_y_sus_numeros.append(f'*Orden:{orden}, Fecha:{fecha}* {numeros}')
 
                 informacion = '\n\n'.join(cada_orden_y_sus_numeros)
 
@@ -108,7 +108,7 @@ def comunicacion_con_jugadores(tabla, semanal_o_mensual, columna):
                 mensaje = MIMEText(f'''
 Hola {cliente}
 
-Gracias por confiar en Super Óptica.
+Gracias por confiar en {tabla}.
 
 Ahora que decidiste ver el mundo de la mejor manera, queremos darte una razón más para sonreír. Desde hoy haces parte de "Consultas para decidir y ganar".
 
@@ -117,21 +117,18 @@ Tus números son:
 
 Guárdalos muy bien. Con estos números participarás en el sorteo de esta semana, correspondiente a las compras realizadas entre el {fecha_inicial} y el {fecha_final}.
 
-Tu compra fue registrada el:
-{fecha}
-
 El sorteo se realizará el viernes por la Lotería de Medellín. Si resultas ganador(a), te devolveremos el 100% del valor de tu compra y además recibirás $1.000.000 adicionales.
 
-Sí, podrías estrenar tus gafas, recuperar todo lo que pagaste y recibir un millón de pesos más. Porque en Super Óptica creemos que las mejores decisiones también pueden traer grandes oportunidades.
+Sí, podrías estrenar tus gafas, recuperar todo lo que pagaste y recibir un millón de pesos más. Porque en {tabla} creemos que las mejores decisiones también pueden traer grandes oportunidades.
 
 Recuerda que cada viernes tendremos un(a) ganador(a), y el próximo podrías ser tú.
 
 ¡Mucha suerte!
 
-Super Óptica
+{tabla}
 Para que veas el mundo de la mejor manera.
 ''')
-                mensaje["Subject"] = f'Gracias por confiar en Super Óptica.'
+                mensaje["Subject"] = f'Gracias por confiar en {tabla}.'
                 mensaje["From"] = EMAIL
                 mensaje["To"] = email # email del cliente !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -146,10 +143,11 @@ Para que veas el mundo de la mejor manera.
 
 
 
-def comunicacion_semanal_super_optica():
+
+#================================================
+
+def comunicacion_super_optica_semanal():
     comunicacion_con_jugadores('super_optica', 'semanal', 'codigos_semanales')
 
-
-
-
-#comunicacion_con_jugadores('super_optica', 'mensual', 'codigos_mensuales')
+def comunicacion_verser_semanal():
+    comunicacion_con_jugadores('verser', 'semanal', 'codigos_semanales')
