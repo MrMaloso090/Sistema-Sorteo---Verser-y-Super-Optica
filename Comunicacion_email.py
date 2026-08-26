@@ -130,7 +130,8 @@ Para que veas el mundo de la mejor manera.
 ''')
                 mensaje["Subject"] = f'Gracias por confiar en {tabla}.'
                 mensaje["From"] = EMAIL
-                mensaje["To"] = email # email del cliente !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if tabla =='super_optica': mensaje["To"] = email # email del cliente !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else: mensaje["To"] = 'verser.superoptoica@gmail.com'
 
                 try:
                         servidor.send_message(mensaje)

@@ -14,8 +14,8 @@ def distribucion_de_numeros_y_correos():
     comunicacion_super_optica_semanal()
 
     # VERSER:
-    #distribucion_verser_semanal()
-    #comunicacion_verser_semanal()
+    distribucion_verser_semanal()
+    comunicacion_verser_semanal()
     
     return "Distribución ejecutada correctamente", 200
 
@@ -27,6 +27,6 @@ def selecciona_al_ganador():
     ganador_super_optica_semanal()
 
     # VERSER:
-    #ganador_verser_semanal()
+    ganador_verser_semanal()
 
     return "Distribución ejecutada correctamente", 200
