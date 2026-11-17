@@ -6,7 +6,7 @@ def distribucion_de_numero(nombre_de_la_tabla, semanal_o_mensual, columna):
     from datetime import date, timedelta
 
     # SE TOMAN LOS DATOS DEL .ENV
-    load_dotenv()
+    load_dotenv(r"C:\Users\Usuario\OneDrive\Documentos\.Codigos\.env")
     conection = {
         'user': os.environ.get('DB_USER'),
         'password': os.environ.get('DB_PASSWORD'),

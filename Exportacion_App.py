@@ -18,7 +18,7 @@ def exportacion():
             ruta_base = os.path.dirname(os.path.abspath(__file__))
 
         # Carga las variables del .env
-        load_dotenv()
+        load_dotenv(r"C:\Users\Usuario\OneDrive\Documentos\.Codigos\.env")
 
         # CONECCION MySQL.
         connection = {

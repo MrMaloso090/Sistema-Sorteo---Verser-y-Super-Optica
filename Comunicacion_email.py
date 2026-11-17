@@ -8,7 +8,7 @@ def comunicacion_con_jugadores(tabla, semanal_o_mensual, columna):
     import time
 
     # SE TOMAN LOS DATOS DEL .ENV
-    load_dotenv()
+    load_dotenv(r"C:\Users\Usuario\OneDrive\Documentos\.Codigos\.env")
     EMAIL = os.getenv("EMAIL")
     PASSWORD = os.getenv("EMAIL_PASSWORD")
     conection = {
